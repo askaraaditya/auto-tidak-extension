@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Auto Pilih Tidak",
+  "version": "1.0",
+  "description": "Ekstensi untuk otomatis memilih opsi 'Tidak' atau opsi terakhir pada form.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_title": "Klik untuk mengisi form"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
