@@ -1,25 +1,34 @@
-// Mendengarkan event ketika ikon ekstensi diklik
 chrome.action.onClicked.addListener((tab) => {
-  // Menyuntikkan dan menjalankan fungsi di tab yang sedang aktif
+  // Mencegah error jika ekstensi diklik di halaman pengaturan Chrome atau tab kosong
+  if (tab.url.startsWith("chrome://") || tab.url.startsWith("edge://")) {
+    return;
+  }
+
+  // Menyuntikkan script ke halaman utama DAN semua iframe di dalamnya
   chrome.scripting.executeScript({
-    target: { tabId: tab.id },
+    target: { tabId: tab.id, allFrames: true }, 
     function: jalankanScriptKamu
-  });
+  }).then(() => console.log("Script berhasil disuntikkan"));
 });
 
-// Ini adalah kode asli milikmu yang dibungkus dalam sebuah fungsi
 function jalankanScriptKamu() {
-  // Memilih opsi "Tidak" atau opsi terakhir pada setiap pertanyaan
-  document.querySelectorAll('input[type="radio"][value*="Tidak"], input[type="radio"][value*="tidak"]').forEach(input => input.click());
+  let jumlahDiklik = 0;
 
-  // Kode ini akan memilih opsi terakhir di setiap grup pertanyaan
+  // 1. Memilih opsi "Tidak" (Saya tambahkan huruf besar TIDAK untuk jaga-jaga)
+  document.querySelectorAll('input[type="radio"][value*="Tidak"], input[type="radio"][value*="tidak"], input[type="radio"][value*="TIDAK"]').forEach(input => {
+      input.click();
+      jumlahDiklik++;
+  });
+
+  // 2. Kode untuk memilih opsi terakhir di setiap grup pertanyaan
   document.querySelectorAll('div[role="radiogroup"]').forEach(group => {
       const options = group.querySelectorAll('input[type="radio"]');
       if(options.length > 0) {
           options[options.length - 1].click(); // Klik opsi paling bawah
+          jumlahDiklik++;
       }
   });
   
-  // (Opsional) Memberikan feedback visual di console bahwa script berjalan
-  console.log("Ekstensi berhasil dijalankan: Opsi telah dipilih.");
+  // Memberikan laporan di Console F12
+  console.log("Ekstensi Autofill Berjalan! Total tombol yang diklik: " + jumlahDiklik);
 }
